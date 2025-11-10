@@ -1,25 +1,30 @@
+// src/components/Sidebar.jsx
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-const linkClass = ({ isActive }) => (isActive ? "active" : undefined);
+const logo = "/gripetime-logo.png";
+
+const linkClass = ({ isActive }) =>
+  isActive ? "nav-link is-active" : "nav-link";
 
 export default function Sidebar() {
-  const logo = "/Gripetime.com/gripetime-logo.png"; // if you add it to /public
-
   return (
-    <nav className="nav">
+    <aside className="sidebar">
       <div className="brand">
-        {/* If you haven't uploaded the logo yet, this <img> is optional */}
-        <img src={logo} alt="Gripetime" onError={(e) => (e.currentTarget.style.display = "none")} />
-        <span>Gripetime</span>
+        <img src={logo} alt="Gripetime Logo" className="brand-logo" />
+        <div className="brand-name">Gripetime</div>
+        <div className="brand-tag">Head-to-Head Dispute Resolution</div>
       </div>
 
-      <NavLink to="/" className={linkClass}>Home</NavLink>
-      <NavLink to="/create" className={linkClass}>Create a Gripe</NavLink>
-      <NavLink to="/respond" className={linkClass}>Respond</NavLink>
-      <NavLink to="/gripes" className={linkClass}>Gripes</NavLink>
-      <NavLink to="/rules" className={linkClass}>Rules</NavLink>
-      <NavLink to="/legal" className={linkClass}>Legal</NavLink>
-    </nav>
+      <nav className="nav">
+        <NavLink className={linkClass} to="/">Home</NavLink>
+        <NavLink className={linkClass} to="/gripes">Gripes</NavLink>
+        <NavLink className={linkClass} to="/create">Create</NavLink>
+        <NavLink className={linkClass} to="/respond">Respond</NavLink>
+        <NavLink className={linkClass} to="/leaderboards">Leaderboards</NavLink>
+        <NavLink className={linkClass} to="/admin">Admin</NavLink>
+        <NavLink className={linkClass} to="/auth">Sign In</NavLink>
+      </nav>
+    </aside>
   );
 }
