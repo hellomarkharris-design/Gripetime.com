@@ -1,0 +1,194 @@
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  font-weight:800;
+  background:#0b0d26;
+  color:#fff;
+}
+
+/* Theme colors */
+:root{
+  --purple:#7c3aed;
+  --neon:#39ff14;
+  --ink:#ffffff;
+  --bg:#0b0d26;
+  --card:#10142f;
+  --ring:#14183b;
+  --soft:#1b2047;
+  --border:#232a5b;
+}
+
+/* Header */
+header{padding:12px 16px;background:#0b0d26;position:sticky;top:0;z-index:10;}
+nav a{
+  margin-right:16px;
+  color:var(--ink);
+  text-decoration:none;
+  font-weight:800;
+}
+nav a.active{color:var(--neon);}
+.wrap{max-width:1100px;margin:0 auto;padding:20px;}
+.center{text-align:center;}
+
+/* Buttons */
+.btn{
+  background:var(--purple);
+  color:var(--ink);
+  border:0;
+  border-radius:12px;
+  padding:12px 22px;
+  font-weight:800;
+  cursor:pointer;
+}
+.btn.neon{background:var(--neon);color:#0b0d26;}
+.btn.secondary{background:#2c3368;color:#fff;border:1px solid #3b4594;}
+
+/* Sections & cards */
+section{margin-bottom:40px;}
+.card{background:var(--soft);border:1px solid var(--border);border-radius:16px;padding:18px;margin-top:16px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:900px){.grid2{grid-template-columns:1fr;}}
+
+/* HEAD TO HEAD Title */
+.title{
+  font-size:26px;
+  text-align:center;
+  font-weight:800;
+  letter-spacing:2px;
+}
+.title span{color:var(--neon);}
+.divider{height:4px;background:var(--neon);width:38%;margin:10px auto;}
+
+/* UFC Fighter Names */
+.cornerName{
+  text-align:center;
+  font-size:22px;
+  margin-bottom:6px;
+}
+.cornerName.red{color:var(--purple);}
+.cornerName.blue{color:var(--neon);}
+
+/* VS Badge */
+.vs{
+  width:75px;height:75px;
+  border-radius:50%;
+  border:3px solid var(--neon);
+  display:grid;place-items:center;
+  background:#111;color:var(--neon);
+  font-size:34px;
+  margin:0 auto;
+  position:relative;
+  animation:vsFlash 3s ease-in-out infinite;
+}
+.vs::after{
+  content:"";
+  position:absolute;
+  inset:-14px;
+  border-radius:50%;
+  opacity:0;
+  box-shadow:
+    0 0 60px 16px rgba(57,255,20,0.45),
+    0 0 120px 28px rgba(124,58,237,0.30);
+  animation:vsHalo 3s ease-in-out infinite;
+}
+
+/* VS Animations */
+@keyframes vsFlash{
+  0%,100% { transform:scale(1); }
+  10%     { transform:scale(1.14); }
+  14%     { transform:scale(1); }
+  50%     { transform:scale(1.06); }
+}
+@keyframes vsHalo{
+  0%,100%{opacity:0;}
+  8%{opacity:1;}
+  20%{opacity:0;}
+}
+
+/* Fighter Layout */
+.ring{
+  display:grid;
+  grid-template-columns:1fr 80px 1fr;
+  gap:16px;
+  align-items:start;
+  margin-top:10px;
+  scale:0.83;
+  transform-origin:top center;
+}
+
+.photoCircle{
+  width:200px;height:200px;
+  border-radius:50%;
+  border:4px solid var(--purple);
+  display:grid;place-items:center;
+  background:#0f1333;
+  color:var(--neon);
+  margin:0 auto;
+  position:relative;
+}
+
+/* Glow over fighters */
+#homeLeftCircle{
+  animation:leftPulse 2.4s ease-in-out infinite;
+}
+#homeRightCircle{
+  animation:rightPulse 2.4s ease-in-out infinite;
+  animation-delay:.4s;
+}
+@keyframes leftPulse{
+  0%{box-shadow:0 0 0 0 rgba(124,58,237,0);}
+  50%{box-shadow:
+    0 0 32px 8px rgba(124,58,237,0.6),
+    0 0 80px 20px rgba(124,58,237,0.3);
+  }
+  100%{box-shadow:0 0 0 0 rgba(124,58,237,0);}
+}
+@keyframes rightPulse{
+  0%{box-shadow:0 0 0 0 rgba(57,255,20,0);}
+  50%{box-shadow:
+    0 0 32px 8px rgba(57,255,20,0.6),
+    0 0 80px 20px rgba(57,255,20,0.3);
+  }
+  100%{box-shadow:0 0 0 0 rgba(57,255,20,0);}
+}
+
+.mainPhoto{
+  height:200px;border-radius:12px;
+  border:2px dashed var(--purple);
+  display:grid;place-items:center;
+  color:var(--neon);margin-top:6px;
+}
+.thumb{
+  height:90px;border-radius:10px;
+  border:2px dashed var(--purple);
+  display:grid;place-items:center;color:var(--neon);
+}
+.thumbs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+
+/* Text areas */
+textarea,input{width:100%;padding:10px;border-radius:8px;background:#121741;color:#fff;border:1px solid #232a5b;font-weight:800;}
+
+/* Vote stars */
+.voteRow{display:flex;justify-content:center;margin-top:10px;}
+.stars{display:flex;gap:6px;margin-right:10px;}
+.stars button{
+  background:#101542;border:1px solid #5a66d6;
+  padding:6px 8px;border-radius:8px;
+  color:var(--neon);cursor:pointer;font-weight:800;
+}
+
+/* Upload areas */
+.drop{
+  border:2px dashed var(--purple);
+  border-radius:14px;
+  height:160px;display:grid;place-items:center;
+  background:#0f1333;color:var(--neon);cursor:pointer;
+}
+.drop.drag{background:#161d4a;}
+textarea,input,select{font-weight:800;border-radius:12px;}
+
+/* Age badges */
+.age-green{background:#10351c;border:1px solid #1f6b39;}
+.age-yellow{background:#3b370f;border:1px solid #7a7420;}
+.age-red{background:#41141b;border:1px solid #9c2c3f;}
