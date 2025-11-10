@@ -38,3 +38,8 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+- name: Use Node 20
+  uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'
