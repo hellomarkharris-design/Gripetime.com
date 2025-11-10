@@ -1,23 +1,40 @@
-import React, { useState } from "react";
+// src/pages/Create.jsx
+import React, { useRef, useState } from "react";
 
 const LS_KEY = "gt_v3";
 const load = () => JSON.parse(localStorage.getItem(LS_KEY) || `{"gripes":[],"selectedId":null}`);
 const save = (db) => localStorage.setItem(LS_KEY, JSON.stringify(db));
 
-const toDataURL = (file) =>
-  new Promise((res) => {
+const wc = (s = "") => (s.trim() ? s.trim().split(/\s+/).length : 0);
+const clip = (s = "") => (wc(s) > 1000 ? s.split(/\s+/).slice(0, 1000).join(" ") : s);
+const dt = (file) =>
+  new Promise((r) => {
     const fr = new FileReader();
-    fr.onload = (e) => res(e.target.result);
+    fr.onload = (e) => r(e.target.result);
     fr.readAsDataURL(file);
   });
 
 export default function Create() {
+  const inputRef = useRef(null);
   const [files, setFiles] = useState([]);
   const [text, setText] = useState("");
 
-  async function handleSave() {
-    const imgs = await Promise.all(files.slice(0, 3).map(toDataURL));
+  const pick = () => inputRef.current?.click();
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    const list = Array.from(e.dataTransfer.files || []);
+    setFiles(list);
+  };
+
+  const onChoose = (e) => {
+    const list = Array.from(e.target.files || []);
+    setFiles(list);
+  };
+
+  const onSave = async () => {
     const db = load();
+    const imgs = await Promise.all(files.slice(0, 3).map(dt));
     const id = "g" + Math.random().toString(36).slice(2);
     db.gripes.unshift({
       id,
@@ -25,14 +42,15 @@ export default function Create() {
       created: Date.now(),
       votes: { L: 0, R: 0 },
       voted: {},
-      griper: { images: imgs, text },
-      gripee: { images: [], text: "" }
+      griper: { images: imgs, text: clip(text) },
+      gripee: { images: [], text: "" },
     });
     db.selectedId = id;
     save(db);
-    alert("Draft saved. Open Home to see it.");
-    setFiles([]); setText("");
-  }
+    setFiles([]);
+    setText("");
+    location.hash = "#/";
+  };
 
   return (
     <section className="card">
@@ -40,30 +58,38 @@ export default function Create() {
 
       <div className="grid2">
         <div>
-          <label className="drop" htmlFor="createFiles">Click or drop images</label>
+          <div
+            className="drop"
+            onClick={pick}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={onDrop}
+          >
+            Click or drop images
+          </div>
           <input
+            ref={inputRef}
             id="createFiles"
             type="file"
             accept="image/*"
             multiple
             hidden
-            onChange={(e) => setFiles([...e.target.files])}
+            onChange={onChoose}
           />
-          <div>{Math.min(3, files.length)} / 3 selected</div>
+          <div id="createCount">{Math.min(3, files.length)} / 3 selected</div>
         </div>
 
         <div>
           <textarea
-            rows="10"
-            placeholder="Describe your gripe…"
+            rows={10}
+            placeholder="Describe your gripe..."
             value={text}
-            onChange={(e) => setText(e.target.value.split(/\s+/).slice(0, 1000).join(" "))}
+            onChange={(e) => setText(clip(e.target.value))}
           />
-          <div>{(text.trim()?.split(/\s+/).length || 0)} / 1000 words</div>
+          <div id="createWords">{wc(text)} / 1000 words</div>
         </div>
       </div>
 
-      <button className="btn" onClick={handleSave}>Save Draft</button>
+      <button className="btn" onClick={onSave}>Save Draft</button>
     </section>
   );
 }
