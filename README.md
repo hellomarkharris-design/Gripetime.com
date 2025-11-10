@@ -1,7 +1,9 @@
 # Gripetime
 
-Public site and source code for the Gripetime web app.
-Built with React + Vite.
+React + Vite site with a "Head-to-Head" theme and localStorage data.
 
-Live site:
-https://hellomarkharris-design.github.io/gripetime/
+## Local dev
+
+```bash
+npm install
+npm run dev
