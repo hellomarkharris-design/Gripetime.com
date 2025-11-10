@@ -1,3 +1,4 @@
+console.log("Logo URL = ", logo);
 import logo from "./assets/gripetime-logo.png";   // ✅ logo import first
 import React from "react";
 import { Routes, Route, Link } from "react-router-dom";
