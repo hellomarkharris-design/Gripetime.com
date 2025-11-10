@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route, Link } from "react-router-dom";
 
-import logo from "./assets/gripetime-logo.png";  // ✅ logo import
+import logo from "./assets/gripetime-logo.png";
 
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
@@ -13,17 +13,14 @@ import Legal from "./pages/Legal.jsx";
 export default function App() {
   return (
     <div className="wrap" style={{ textAlign: "center" }}>
-
-      {/* ✅ Logo always at top */}
       <div style={{ padding: "20px" }}>
-        <img 
-          src={logo} 
-          alt="Gripetime Logo" 
+        <img
+          src={logo}
+          alt="Gripetime Logo"
           style={{ width: "150px", marginBottom: "10px" }}
         />
       </div>
 
-      {/* ✅ Navigation */}
       <nav style={{ marginBottom: "20px" }}>
         <Link to="/">Home</Link> |{" "}
         <Link to="/login">Login</Link> |{" "}
@@ -31,8 +28,7 @@ export default function App() {
         <Link to="/rules">Rules</Link> |{" "}
         <Link to="/legal">Legal</Link>
       </nav>
-      
-      {/* ✅ Routes */}
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
