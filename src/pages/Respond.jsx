@@ -1,65 +1,106 @@
-import React, { useEffect, useState } from "react";
+// src/pages/Respond.jsx
+import React, { useMemo, useRef, useState } from "react";
 
 const LS_KEY = "gt_v3";
 const load = () => JSON.parse(localStorage.getItem(LS_KEY) || `{"gripes":[],"selectedId":null}`);
 const save = (db) => localStorage.setItem(LS_KEY, JSON.stringify(db));
 
-const toDataURL = (file) =>
-  new Promise((res) => {
+const wc = (s = "") => (s.trim() ? s.trim().split(/\s+/).length : 0);
+const clip = (s = "") => (wc(s) > 1000 ? s.split(/\s+/).slice(0, 1000).join(" ") : s);
+const dt = (file) =>
+  new Promise((r) => {
     const fr = new FileReader();
-    fr.onload = (e) => res(e.target.result);
+    fr.onload = (e) => r(e.target.result);
     fr.readAsDataURL(file);
   });
 
 export default function Respond() {
+  const inputRef = useRef(null);
   const [db, setDb] = useState(load());
-  const [sel, setSel] = useState(db.selectedId || "");
+  const [pickId, setPickId] = useState(db.selectedId || "");
   const [files, setFiles] = useState([]);
   const [text, setText] = useState("");
 
-  useEffect(() => setDb(load()), []);
+  const selected = useMemo(
+    () => db.gripes.find((g) => g.id === pickId) || null,
+    [db, pickId]
+  );
 
-  async function saveResponse() {
-    const imgs = await Promise.all(files.slice(0, 3).map(toDataURL));
-    const d = load();
-    const g = d.gripes.find((x) => x.id === sel);
-    if (!g) return alert("Pick a gripe first!");
+  const pick = () => inputRef.current?.click();
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    setFiles(Array.from(e.dataTransfer.files || []));
+  };
+
+  const onChoose = (e) => setFiles(Array.from(e.target.files || []));
+
+  const onSave = async () => {
+    if (!selected) return alert("Pick a gripe first!");
+    const imgs = await Promise.all(files.slice(0, 3).map(dt));
+    const next = { ...db, gripes: db.gripes.map((g) => ({ ...g })) };
+    const g = next.gripes.find((x) => x.id === selected.id);
     g.gripee.images = imgs;
-    g.gripee.text = text;
-    save(d);
-    alert("Response saved. Open Home to see it.");
-    setFiles([]); setText("");
-  }
+    g.gripee.text = clip(text);
+    setDb(next);
+    save(next);
+    location.hash = "#/";
+  };
 
   return (
     <section className="card">
       <h2>Respond to a Gripe</h2>
 
-      <select style={{ width: "100%", padding: 10 }} value={sel} onChange={(e) => setSel(e.target.value)}>
-        {db.gripes.length === 0 ? <option>No gripes</option> :
-          db.gripes.map(g => <option key={g.id} value={g.id}>{g.id}</option>)
-        }
+      <select
+        style={{ width: "100%", padding: 10 }}
+        value={pickId || ""}
+        onChange={(e) => setPickId(e.target.value)}
+      >
+        {db.gripes.length === 0 ? (
+          <option>No gripes</option>
+        ) : (
+          db.gripes.map((g) => (
+            <option key={g.id} value={g.id}>
+              {g.id}
+            </option>
+          ))
+        )}
       </select>
 
       <div className="grid2" style={{ marginTop: 10 }}>
         <div>
-          <label className="drop" htmlFor="respFiles">Click or drop images</label>
-          <input id="respFiles" type="file" accept="image/*" multiple hidden onChange={(e) => setFiles([...e.target.files])} />
-          <div>{Math.min(3, files.length)} / 3 selected</div>
+          <div
+            className="drop"
+            onClick={pick}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={onDrop}
+          >
+            Click or drop images
+          </div>
+          <input
+            ref={inputRef}
+            id="respFiles"
+            type="file"
+            accept="image/*"
+            multiple
+            hidden
+            onChange={onChoose}
+          />
+          <div id="respCount">{Math.min(3, files.length)} / 3 selected</div>
         </div>
 
         <div>
           <textarea
-            rows="10"
-            placeholder="Respond here…"
+            rows={10}
+            placeholder="Respond here..."
             value={text}
-            onChange={(e) => setText(e.target.value.split(/\s+/).slice(0, 1000).join(" "))}
+            onChange={(e) => setText(clip(e.target.value))}
           />
-          <div>{(text.trim()?.split(/\s+/).length || 0)} / 1000 words</div>
+          <div id="respWords">{wc(text)} / 1000 words</div>
         </div>
       </div>
 
-      <button className="btn" onClick={saveResponse}>Save Response</button>
+      <button className="btn" onClick={onSave}>Save Response</button>
     </section>
   );
 }
