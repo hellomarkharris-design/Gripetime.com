@@ -10,23 +10,9 @@ import Legal from "./pages/Legal.jsx";
 
 export default function App() {
   return (
-    <div className="wrap">
-      <nav>
-        <Link to="/">Home</Link> |{" "}
-        <Link to="/login">Login</Link> |{" "}
-        <Link to="/signup">Signup</Link> |{" "}
-        <Link to="/rules">Rules</Link> |{" "}
-        <Link to="/legal">Legal</Link>
-      </nav>
+    <div className="wrap" style={{ textAlign: "center" }}>
       
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/rules" element={<Rules />} />
-        <Route path="/legal" element={<Legal />} />
-      </Routes>
-    </div>
-  );
-}
+      {/* ✅ Logo at top of all pages */}
+      <div style={{ padding: "20px" }}>
+        <img 
+         
