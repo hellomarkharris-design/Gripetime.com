@@ -1,31 +1,24 @@
 import React from "react";
-import Sidebar from "./components/Sidebar.jsx";
-import Home from "./pages/Home.jsx";
-import Create from "./pages/Create.jsx";
-import Respond from "./pages/Respond.jsx";
-import Gripes from "./pages/Gripes.jsx";
-import Rules from "./pages/Rules.jsx";
-import Legal from "./pages/Legal.jsx";
-import { Routes, Route, Navigate } from "react-router-dom";
+import "./styles.css";
 
 export default function App() {
   return (
     <div className="wrap">
       <header className="header">
-        <Sidebar />
+        <nav>
+          <a className="brand" href="#/">Gripetime</a>
+          <a href="#/">Home</a>
+          <a href="#/create">Create a Gripe</a>
+          <a href="#/respond">Respond</a>
+          <a href="#/gripes">Gripes</a>
+          <a href="#/rules">Rules</a>
+          <a href="#/legal">Legal</a>
+        </nav>
       </header>
 
-      <main>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/create" element={<Create />} />
-          <Route path="/respond" element={<Respond />} />
-          <Route path="/gripes" element={<Gripes />} />
-          <Route path="/rules" element={<Rules />} />
-          <Route path="/legal" element={<Legal />} />
-          {/* default */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+      <main style={{ padding: 20 }}>
+        <h1>Head-to-Head</h1>
+        <p>Deployed via GitHub Pages + Vite.</p>
       </main>
     </div>
   );
