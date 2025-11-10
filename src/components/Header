@@ -1,0 +1,13 @@
+import logo from '../assets/gripetime-logo.png';
+
+export default function Header() {
+  return (
+    <header style={{ padding: "20px", textAlign: "center" }}>
+      <img 
+        src={logo} 
+        alt="Gripetime Logo" 
+        style={{ width: "150px" }}
+      />
+    </header>
+  );
+}
