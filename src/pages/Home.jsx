@@ -52,7 +52,6 @@ export default function Home() {
 
   const setStars = (side, stars) => {
     localStorage.setItem(`stars_${side}`, String(stars));
-    // force re-render
     setDb((d) => ({ ...d }));
   };
 
@@ -72,8 +71,6 @@ export default function Home() {
 
   return (
     <section className="card">
-      {/* Removed the HEAD TO HEAD title & divider */}
-
       {/* Select gripe */}
       <select
         id="homeSelect"
@@ -95,7 +92,7 @@ export default function Home() {
       <div className="ring">
         {/* Left (GRIPER) */}
         <div className="card" id="homeLeft">
-          <div className="cornerName red">GRIPER</div>
+          <div className="cornerName red" style={{ fontSize: "1.5em" }}>GRIPER</div>
 
           <ImageBox
             id="homeLeftCircle"
@@ -159,7 +156,7 @@ export default function Home() {
 
         {/* Right (GRIPEE) */}
         <div className="card" id="homeRight">
-          <div className="cornerName blue">GRIPEE</div>
+          <div className="cornerName blue" style={{ fontSize: "1.5em" }}>GRIPEE</div>
 
           <ImageBox
             id="homeRightCircle"
