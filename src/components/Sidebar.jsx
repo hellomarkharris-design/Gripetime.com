@@ -1,8 +1,8 @@
-// src/components/Sidebar.jsx
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-const logo = "/gripetime-logo.png";
+// ✅ Works for GH Pages
+const logo = `${import.meta.env.BASE_URL}gripetime-logo.png`;
 
 const linkClass = ({ isActive }) =>
   isActive ? "nav-link is-active" : "nav-link";
