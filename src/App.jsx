@@ -1,7 +1,8 @@
-console.log("Logo URL = ", logo);
-import logo from "./assets/gripetime-logo.png";   
 import React from "react";
 import { Routes, Route, Link } from "react-router-dom";
+
+// ✅ Logo import (works when file exists at src/assets/gripetime-logo.png)
+import logo from "./assets/gripetime-logo.png";
 
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
@@ -14,14 +15,16 @@ export default function App() {
   return (
     <div className="wrap" style={{ textAlign: "center" }}>
       
+      {/* ✅ Logo at top */}
       <div style={{ padding: "20px" }}>
         <img
           src={logo}
-          alt="Gripetime Logo"
+          alt="Gripetime"
           style={{ width: "150px", marginBottom: "10px" }}
         />
       </div>
 
+      {/* ✅ Navigation */}
       <nav style={{ marginBottom: "20px" }}>
         <Link to="/">Home</Link> |{" "}
         <Link to="/login">Login</Link> |{" "}
@@ -29,7 +32,8 @@ export default function App() {
         <Link to="/rules">Rules</Link> |{" "}
         <Link to="/legal">Legal</Link>
       </nav>
-      
+
+      {/* ✅ Routes */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
