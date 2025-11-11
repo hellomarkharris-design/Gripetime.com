@@ -72,8 +72,7 @@ export default function Home() {
 
   return (
     <section className="card">
-      <div className="title">HEAD <span>TO</span> HEAD</div>
-      <div className="divider" />
+      {/* Removed the HEAD TO HEAD title & divider */}
 
       {/* Select gripe */}
       <select
