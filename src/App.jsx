@@ -8,13 +8,13 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Rules from "./pages/Rules.jsx";
 import Legal from "./pages/Legal.jsx";
 
-// Use Vite's BASE_URL so paths work locally ("/") and on GitHub Pages ("/Gripetime.com/")
+// ✅ Works on localhost AND GitHub Pages (/Gripetime.com/)
 const logo = `${import.meta.env.BASE_URL}gripetime-logo.png`;
 
 export default function App() {
   return (
     <div className="wrap" style={{ textAlign: "center" }}>
-      {/* Logo at top */}
+
       <div style={{ padding: "20px" }}>
         <img
           src={logo}
@@ -23,7 +23,6 @@ export default function App() {
         />
       </div>
 
-      {/* Navigation */}
       <nav style={{ marginBottom: "20px" }}>
         <Link to="/">Home</Link> |{" "}
         <Link to="/login">Login</Link> |{" "}
@@ -32,7 +31,6 @@ export default function App() {
         <Link to="/legal">Legal</Link>
       </nav>
 
-      {/* Routes */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
