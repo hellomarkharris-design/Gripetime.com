@@ -1,4 +1,3 @@
-// src/main.jsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter, NavLink, Routes, Route, Outlet } from "react-router-dom";
@@ -11,7 +10,8 @@ import Gripes from "./pages/Gripes.jsx";
 import Rules from "./pages/Rules.jsx";
 import Legal from "./pages/Legal.jsx";
 
-const logoPath = "/gripetime-logo.png";
+// ✅ Dynamic logo path for Vite + GitHub Pages
+const logoPath = `${import.meta.env.BASE_URL}gripetime-logo.png`;
 
 function Layout() {
   return (
@@ -26,6 +26,7 @@ function Layout() {
           <NavLink to="/legal">Legal</NavLink>
         </nav>
       </header>
+
       <main className="wrap">
         <div className="center">
           <img src={logoPath} alt="Gripetime" style={{ height: 168 }} />
