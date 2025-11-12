@@ -10,7 +10,7 @@ import Gripes from "./pages/Gripes.jsx";
 import Rules from "./pages/Rules.jsx";
 import Legal from "./pages/Legal.jsx";
 
-// ✅ Dynamic logo path for Vite + GitHub Pages
+// Base-aware logo path so it works locally and on GitHub Pages
 const logoPath = `${import.meta.env.BASE_URL}gripetime-logo.png`;
 
 function Layout() {
@@ -26,7 +26,6 @@ function Layout() {
           <NavLink to="/legal">Legal</NavLink>
         </nav>
       </header>
-
       <main className="wrap">
         <div className="center">
           <img src={logoPath} alt="Gripetime" style={{ height: 168 }} />
