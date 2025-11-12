@@ -1,8 +1,11 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
-// IMPORTANT: this must match your repo name exactly (case-sensitive)
+// IMPORTANT: replace with your repo name exactly as it appears on GitHub.
+// If your repo is "Gripetime.com", keep "/Gripetime.com/".
+const base = "/Gripetime.com/";
+
 export default defineConfig({
   plugins: [react()],
-  base: '/Gripetime.com/',
-})
+  base
+});
