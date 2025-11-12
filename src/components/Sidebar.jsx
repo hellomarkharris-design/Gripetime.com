@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-// ✅ Works for GH Pages
+// Base-aware logo path
 const logo = `${import.meta.env.BASE_URL}gripetime-logo.png`;
 
 const linkClass = ({ isActive }) =>
