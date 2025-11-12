@@ -8,22 +8,17 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Rules from "./pages/Rules.jsx";
 import Legal from "./pages/Legal.jsx";
 
-// ✅ Works on localhost AND GitHub Pages (/Gripetime.com/)
+// Base-aware logo path
 const logo = `${import.meta.env.BASE_URL}gripetime-logo.png`;
 
 export default function App() {
   return (
     <div className="wrap" style={{ textAlign: "center" }}>
-
-      <div style={{ padding: "20px" }}>
-        <img
-          src={logo}
-          alt="Gripetime"
-          style={{ width: 150, marginBottom: 10 }}
-        />
+      <div style={{ padding: 20 }}>
+        <img src={logo} alt="Gripetime" style={{ width: 150, marginBottom: 10 }} />
       </div>
 
-      <nav style={{ marginBottom: "20px" }}>
+      <nav style={{ marginBottom: 20 }}>
         <Link to="/">Home</Link> |{" "}
         <Link to="/login">Login</Link> |{" "}
         <Link to="/signup">Signup</Link> |{" "}
