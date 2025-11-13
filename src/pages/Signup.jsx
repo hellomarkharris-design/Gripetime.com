@@ -156,7 +156,7 @@ export default function Signup() {
             checked={form.jury}
             onChange={onChange}
           />
-          I would like to be on a future Gripetime Jury
+          I would like to be on a Gripetime Jury
         </label>
 
         <button className="btn" type="submit" style={{ marginTop: 8 }}>
