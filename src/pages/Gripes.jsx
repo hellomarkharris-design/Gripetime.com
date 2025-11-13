@@ -21,6 +21,22 @@ const load = () => JSON.parse(localStorage.getItem(LS_KEY) || `{"gripes":[],"sel
 const save = (db) => localStorage.setItem(LS_KEY, JSON.stringify(db));
 
 export default function Gripes() {
+  export default function Gripes() {
+  const user = getCurrentUser();
+  if (!user) {
+    return (
+      <section className="card">
+        <h2>Sign in required</h2>
+        <p>You need to sign in before you can view all gripes.</p>
+        <button className="btn" onClick={goToSignIn}>
+          Go to Sign In
+        </button>
+      </section>
+    );
+  }
+
+  // ...rest of your existing Gripes code...
+
   const db = useMemo(load, []);
 
   const show = (id) => {
