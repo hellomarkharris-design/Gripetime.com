@@ -7,6 +7,7 @@ import Signup from "./pages/Signup.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Rules from "./pages/Rules.jsx";
 import Legal from "./pages/Legal.jsx";
+import Signup from "./pages/Signup";
 
 // Base-aware logo path
 const logo = `${import.meta.env.BASE_URL}gripetime-logo.png`;
@@ -33,6 +34,9 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/rules" element={<Rules />} />
         <Route path="/legal" element={<Legal />} />
+        <Route path="/signup" element={<Signup />} />
+
+        
       </Routes>
     </div>
   );
