@@ -21,7 +21,6 @@ const load = () => JSON.parse(localStorage.getItem(LS_KEY) || `{"gripes":[],"sel
 const save = (db) => localStorage.setItem(LS_KEY, JSON.stringify(db));
 
 export default function Gripes() {
-  export default function Gripes() {
   const user = getCurrentUser();
   if (!user) {
     return (
