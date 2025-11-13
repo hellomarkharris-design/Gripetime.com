@@ -31,7 +31,6 @@ const dt = (file) =>
   });
 
 export default function Create() {
-  export default function Create() {
   const user = getCurrentUser();
   if (!user) {
     return (
