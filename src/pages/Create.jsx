@@ -31,6 +31,22 @@ const dt = (file) =>
   });
 
 export default function Create() {
+  export default function Create() {
+  const user = getCurrentUser();
+  if (!user) {
+    return (
+      <section className="card">
+        <h2>Sign in required</h2>
+        <p>You need to sign in before you can create a gripe.</p>
+        <button className="btn" onClick={goToSignIn}>
+          Go to Sign In
+        </button>
+      </section>
+    );
+  }
+
+  // ...rest of your existing Create code...
+
   const { isAuthed } = useAuth();
   const inputRef = useRef(null);
   const [files, setFiles] = useState([]);
