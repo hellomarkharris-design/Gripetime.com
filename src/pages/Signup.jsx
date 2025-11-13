@@ -1,67 +1,194 @@
 // src/pages/Signup.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../AuthContext.jsx";
+
+const USERS_KEY = "gt_users_v1";
+
+function loadUsers() {
+  try {
+    return JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveUsers(users) {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
 
 export default function Signup() {
-  const { signup } = useAuth();
-  const nav = useNavigate();
+  const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    username: "",
-    email: "",
-    password: "",
-    juryOptIn: false,
-  });
-  const [err, setErr] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [joinJury, setJoinJury] = useState(false);
 
-  const onChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
-  };
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const onSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setErr("");
-    try {
-      if (!form.username.trim() || !form.email.trim() || !form.password.trim()) {
-        throw new Error("All fields are required.");
-      }
-      // very simple email check
-      if (!/.+@.+\..+/.test(form.email)) throw new Error("Please enter a valid email.");
-      signup(form);
-      nav("/"); // go home after signup
-    } catch (e2) {
-      setErr(e2.message || "Could not sign up.");
+    setError("");
+    setSuccess("");
+
+    // Basic validation
+    if (!username.trim()) {
+      setError("Please enter a username.");
+      return;
     }
+    if (!email.trim()) {
+      setError("Please enter an email address.");
+      return;
+    }
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    if (!password) {
+      setError("Please enter a password.");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
+
+    // Check for existing email
+    const users = loadUsers();
+    if (users.some((u) => u.email.toLowerCase() === email.trim().toLowerCase())) {
+      setError("An account with that email already exists.");
+      return;
+    }
+
+    // Create user object (prototype only – NOT secure for production)
+    const newUser = {
+      id: "u_" + Math.random().toString(36).slice(2),
+      created: Date.now(),
+      username: username.trim(),
+      email: email.trim(),
+      password, // ⚠️ For real apps, never store plain text passwords
+      joinJury,
+    };
+
+    const updated = [newUser, ...users];
+    saveUsers(updated);
+
+    setSuccess("Account created! You can now sign in.");
+    setUsername("");
+    setEmail("");
+    setPassword("");
+    setJoinJury(false);
+
+    // Optional: redirect to Sign In after a short delay
+    setTimeout(() => {
+      navigate("/auth");
+    }, 1200);
   };
 
   return (
-    <section className="card" style={{ maxWidth: 520, margin: "0 auto" }}>
-      <h2>Create your account</h2>
-      {err && <p style={{ color: "#ff6b6b" }}>{err}</p>}
-      <form onSubmit={onSubmit}>
-        <label>Username</label>
-        <input name="username" value={form.username} onChange={onChange} placeholder="pick a handle" />
+    <main style={{ padding: 24, maxWidth: 480, margin: "0 auto" }}>
+      <section className="card">
+        <h2>Create Your Gripetime Account</h2>
+        <p style={{ marginBottom: 16 }}>
+          A Gripetime account lets you create gripes, respond, and vote.
+        </p>
 
-        <label style={{ marginTop: 10 }}>Email</label>
-        <input name="email" value={form.email} onChange={onChange} placeholder="you@example.com" />
+        {error && (
+          <div
+            style={{
+              background: "#ffe5e5",
+              color: "#a11",
+              padding: "8px 12px",
+              borderRadius: 6,
+              marginBottom: 12,
+            }}
+          >
+            {error}
+          </div>
+        )}
 
-        <label style={{ marginTop: 10 }}>Password</label>
-        <input type="password" name="password" value={form.password} onChange={onChange} placeholder="••••••••" />
+        {success && (
+          <div
+            style={{
+              background: "#e5ffe9",
+              color: "#146c2e",
+              padding: "8px 12px",
+              borderRadius: 6,
+              marginBottom: 12,
+            }}
+          >
+            {success}
+          </div>
+        )}
 
-        <label style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 12 }}>
-          <input type="checkbox" name="juryOptIn" checked={form.juryOptIn} onChange={onChange} />
-          I’d like to be considered for a future Gripetime Jury
-        </label>
+        <form onSubmit={handleSubmit}>
+          <label style={{ display: "block", marginBottom: 8 }}>
+            Username
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              style={{ width: "100%", padding: 8, marginTop: 4 }}
+              placeholder="GripetimeUser123"
+            />
+          </label>
 
-        <div style={{ marginTop: 16 }}>
-          <button className="btn" type="submit">Sign up</button>
-        </div>
-      </form>
-      <p style={{ opacity: 0.7, marginTop: 12, fontSize: 12 }}>
-        Demo build stores credentials in your browser only. We’ll swap in Firebase Auth later.
-      </p>
-    </section>
+          <label style={{ display: "block", marginBottom: 8 }}>
+            Email
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{ width: "100%", padding: 8, marginTop: 4 }}
+              placeholder="you@example.com"
+            />
+          </label>
+
+          <label style={{ display: "block", marginBottom: 12 }}>
+            Password
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{ width: "100%", padding: 8, marginTop: 4 }}
+              placeholder="At least 6 characters"
+            />
+          </label>
+
+          <label style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+            <input
+              type="checkbox"
+              checked={joinJury}
+              onChange={(e) => setJoinJury(e.target.checked)}
+              style={{ marginRight: 8 }}
+            />
+            I would like to be on a future Gripetime Jury.
+          </label>
+
+          <button type="submit" className="btn" style={{ width: "100%" }}>
+            Create Account
+          </button>
+        </form>
+
+        <p style={{ marginTop: 16, fontSize: 14 }}>
+          Already have an account?{" "}
+          <button
+            type="button"
+            onClick={() => navigate("/auth")}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#2f3a85",
+              textDecoration: "underline",
+              padding: 0,
+              cursor: "pointer",
+            }}
+          >
+            Sign in here.
+          </button>
+        </p>
+      </section>
+    </main>
   );
 }
