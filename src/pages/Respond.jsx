@@ -31,6 +31,22 @@ const dt = (file) =>
   });
 
 export default function Respond() {
+  export default function Respond() {
+  const user = getCurrentUser();
+  if (!user) {
+    return (
+      <section className="card">
+        <h2>Sign in required</h2>
+        <p>You need to sign in before you can respond to a gripe.</p>
+        <button className="btn" onClick={goToSignIn}>
+          Go to Sign In
+        </button>
+      </section>
+    );
+  }
+
+  // ...rest of your existing Respond code...
+
   const { isAuthed } = useAuth();
   const inputRef = useRef(null);
   const [db, setDb] = useState(load());
