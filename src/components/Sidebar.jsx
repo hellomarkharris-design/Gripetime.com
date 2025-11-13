@@ -24,6 +24,8 @@ export default function Sidebar() {
         <NavLink className={linkClass} to="/leaderboards">Leaderboards</NavLink>
         <NavLink className={linkClass} to="/admin">Admin</NavLink>
         <NavLink className={linkClass} to="/auth">Sign In</NavLink>
+        <NavLink className={linkClass} to="/signup">Sign Up</NavLink>
+
       </nav>
     </aside>
   );
