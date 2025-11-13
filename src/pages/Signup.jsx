@@ -1,8 +1,8 @@
 // src/pages/Signup.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const USERS_KEY = "gt_users_v1";
+const CURRENT_USER_KEY = "gt_user_v1";
 
 function loadUsers() {
   try {
@@ -16,179 +16,153 @@ function saveUsers(users) {
   localStorage.setItem(USERS_KEY, JSON.stringify(users));
 }
 
+function goHome() {
+  const base = import.meta.env.BASE_URL || "/";
+  window.location.href = base;
+}
+
 export default function Signup() {
-  const navigate = useNavigate();
-
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [joinJury, setJoinJury] = useState(false);
-
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+    jury: true,
+  });
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [message, setMessage] = useState("");
 
-  const handleSubmit = (e) => {
+  const onChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm((f) => ({
+      ...f,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const onSubmit = (e) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
+    setMessage("");
 
-    // Basic validation
-    if (!username.trim()) {
-      setError("Please enter a username.");
-      return;
-    }
-    if (!email.trim()) {
-      setError("Please enter an email address.");
-      return;
-    }
-    if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-    if (!password) {
-      setError("Please enter a password.");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
+    const username = form.username.trim();
+    const email = form.email.trim().toLowerCase();
+    const password = form.password;
+
+    if (!username || !email || !password) {
+      setError("Please fill in all required fields.");
       return;
     }
 
-    // Check for existing email
     const users = loadUsers();
-    if (users.some((u) => u.email.toLowerCase() === email.trim().toLowerCase())) {
-      setError("An account with that email already exists.");
+    const exists = users.find((u) => u.email === email);
+    if (exists) {
+      setError("An account with that email already exists. Please sign in.");
       return;
     }
 
-    // Create user object (prototype only – NOT secure for production)
     const newUser = {
       id: "u_" + Math.random().toString(36).slice(2),
-      created: Date.now(),
-      username: username.trim(),
-      email: email.trim(),
-      password, // ⚠️ For real apps, never store plain text passwords
-      joinJury,
+      username,
+      email,
+      password, // NOTE: plain text only for demo; not secure for real production.
+      jury: !!form.jury,
+      createdAt: Date.now(),
     };
 
-    const updated = [newUser, ...users];
-    saveUsers(updated);
+    const nextUsers = [...users, newUser];
+    saveUsers(nextUsers);
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
 
-    setSuccess("Account created! You can now sign in.");
-    setUsername("");
-    setEmail("");
-    setPassword("");
-    setJoinJury(false);
+    setMessage("Account created and you are signed in.");
+    setForm({ username: "", email: "", password: "", jury: true });
 
-    // Optional: redirect to Sign In after a short delay
-    setTimeout(() => {
-      navigate("/auth");
-    }, 1200);
+    // Small delay just so the message is visible for a moment
+    setTimeout(goHome, 600);
   };
 
   return (
-    <main style={{ padding: 24, maxWidth: 480, margin: "0 auto" }}>
-      <section className="card">
-        <h2>Create Your Gripetime Account</h2>
-        <p style={{ marginBottom: 16 }}>
-          A Gripetime account lets you create gripes, respond, and vote.
-        </p>
+    <main className="card" style={{ maxWidth: 480, margin: "24px auto" }}>
+      <h1>Sign Up</h1>
+      <p style={{ marginBottom: 16 }}>
+        Create a Gripetime account so you can create gripes, respond, and vote.
+      </p>
 
-        {error && (
-          <div
-            style={{
-              background: "#ffe5e5",
-              color: "#a11",
-              padding: "8px 12px",
-              borderRadius: 6,
-              marginBottom: 12,
-            }}
-          >
-            {error}
-          </div>
-        )}
+      {error && (
+        <div
+          style={{
+            marginBottom: 12,
+            padding: 10,
+            borderRadius: 6,
+            background: "#ffe5e5",
+            color: "#b00020",
+          }}
+        >
+          {error}
+        </div>
+      )}
 
-        {success && (
-          <div
-            style={{
-              background: "#e5ffe9",
-              color: "#146c2e",
-              padding: "8px 12px",
-              borderRadius: 6,
-              marginBottom: 12,
-            }}
-          >
-            {success}
-          </div>
-        )}
+      {message && (
+        <div
+          style={{
+            marginBottom: 12,
+            padding: 10,
+            borderRadius: 6,
+            background: "#e5ffe9",
+            color: "#1b5e20",
+          }}
+        >
+          {message}
+        </div>
+      )}
 
-        <form onSubmit={handleSubmit}>
-          <label style={{ display: "block", marginBottom: 8 }}>
-            Username
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              style={{ width: "100%", padding: 8, marginTop: 4 }}
-              placeholder="GripetimeUser123"
-            />
-          </label>
+      <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <label>
+          Username *
+          <input
+            type="text"
+            name="username"
+            value={form.username}
+            onChange={onChange}
+            required
+          />
+        </label>
 
-          <label style={{ display: "block", marginBottom: 8 }}>
-            Email
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{ width: "100%", padding: 8, marginTop: 4 }}
-              placeholder="you@example.com"
-            />
-          </label>
+        <label>
+          Email *
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={onChange}
+            required
+          />
+        </label>
 
-          <label style={{ display: "block", marginBottom: 12 }}>
-            Password
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={{ width: "100%", padding: 8, marginTop: 4 }}
-              placeholder="At least 6 characters"
-            />
-          </label>
+        <label>
+          Password *
+          <input
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={onChange}
+            required
+          />
+        </label>
 
-          <label style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-            <input
-              type="checkbox"
-              checked={joinJury}
-              onChange={(e) => setJoinJury(e.target.checked)}
-              style={{ marginRight: 8 }}
-            />
-            I would like to be on a future Gripetime Jury.
-          </label>
+        <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <input
+            type="checkbox"
+            name="jury"
+            checked={form.jury}
+            onChange={onChange}
+          />
+          I would like to be on a future Gripetime Jury
+        </label>
 
-          <button type="submit" className="btn" style={{ width: "100%" }}>
-            Create Account
-          </button>
-        </form>
-
-        <p style={{ marginTop: 16, fontSize: 14 }}>
-          Already have an account?{" "}
-          <button
-            type="button"
-            onClick={() => navigate("/auth")}
-            style={{
-              background: "none",
-              border: "none",
-              color: "#2f3a85",
-              textDecoration: "underline",
-              padding: 0,
-              cursor: "pointer",
-            }}
-          >
-            Sign in here.
-          </button>
-        </p>
-      </section>
+        <button className="btn" type="submit" style={{ marginTop: 8 }}>
+          Create Account
+        </button>
+      </form>
     </main>
   );
 }
