@@ -31,7 +31,6 @@ const dt = (file) =>
   });
 
 export default function Respond() {
-  export default function Respond() {
   const user = getCurrentUser();
   if (!user) {
     return (
