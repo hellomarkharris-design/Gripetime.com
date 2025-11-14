@@ -1,6 +1,6 @@
 // src/pages/Home.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import HeadToHead from "../components/HeadToHead.jsx";
+import HeadtoHead from "../HeadtoHead.jsx";
 
 /** ===== Local DB helpers (same shape as Create/Respond/Admin) ===== */
 const LS_KEY = "gt_v3";
