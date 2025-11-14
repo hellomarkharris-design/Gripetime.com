@@ -16,45 +16,20 @@ const dt = (file) =>
     fr.readAsDataURL(file);
   });
 
-// 🔐 Auth helpers
-const CURRENT_USER_KEY = "gt_user_v1";
-
-function getCurrentUser() {
-  try {
-    const raw = localStorage.getItem(CURRENT_USER_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-function goToSignIn() {
-  const base = import.meta.env.BASE_URL || "/";
-  window.location.href = `${base}auth`;
+// Parse ?g=...&t=... from the hash (e.g. #/respond?g=id&t=token)
+function getParamsFromHash() {
+  const hash = window.location.hash || "";
+  const qIndex = hash.indexOf("?");
+  if (qIndex === -1) return new URLSearchParams();
+  return new URLSearchParams(hash.slice(qIndex + 1));
 }
 
 export default function Respond() {
-  const user = getCurrentUser();
-
-  // Require sign in for responding
-  if (!user) {
-    return (
-      <section className="card">
-        <h2>Sign in required</h2>
-        <p>You need to sign in before you can respond to a gripe.</p>
-        <button className="btn" onClick={goToSignIn}>
-          Go to Sign In
-        </button>
-      </section>
-    );
-  }
-
   const [db, setDb] = useState(load());
   const inputRef = useRef(null);
 
-  // Try to honor a share link like ?g=<id>&t=<token>
   const [pickId, setPickId] = useState(() => {
-    const params = new URLSearchParams(window.location.search);
+    const params = getParamsFromHash();
     const gid = params.get("g");
     const token = params.get("t");
     const localDB = load();
@@ -86,14 +61,16 @@ export default function Respond() {
   const onChangeSelect = (e) => setPickId(e.target.value);
 
   const onSave = async () => {
-    if (!selected) return alert("Pick a gripe first!");
+    if (!selected) {
+      alert("Pick a gripe first!");
+      return;
+    }
 
     const imgs = await Promise.all(files.slice(0, 3).map(dt));
     const next = { ...db, gripes: db.gripes.map((g) => ({ ...g })) };
     const g = next.gripes.find((x) => x.id === selected.id);
     if (!g) return;
 
-    // Save as draft, subject to Admin review
     g.gripeeDraft = {
       images: imgs,
       text: clip(text),
@@ -105,7 +82,7 @@ export default function Respond() {
 
     setDb(next);
     save(next);
-    location.hash = "#/"; // back to home
+    window.location.hash = "#/";
   };
 
   return (
