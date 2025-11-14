@@ -8,6 +8,8 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Rules from "./pages/Rules.jsx";
 import Legal from "./pages/Legal.jsx";
 import Signup from "./pages/Signup";
+import Admin from "./pages/Admin";
+
 
 // Base-aware logo path
 const logo = `${import.meta.env.BASE_URL}gripetime-logo.png`;
@@ -26,18 +28,20 @@ export default function App() {
         <Link to="/rules">Rules</Link> |{" "}
         <Link to="/legal">Legal</Link>
       </nav>
+<Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/gripes" element={<Gripes />} />
+  <Route path="/create" element={<Create />} />
+  <Route path="/respond" element={<Respond />} />
+  <Route path="/leaderboards" element={<Leaderboards />} />
+  <Route path="/admin" element={<Admin />} />   {/* 👈 This line */}
+  <Route path="/auth" element={<Auth />} />
+  <Route path="/signup" element={<Signup />} />
+  <Route path="/rules" element={<Rules />} />
+  <Route path="/legal" element={<Legal />} />
+</Routes>
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/rules" element={<Rules />} />
-        <Route path="/legal" element={<Legal />} />
-        <Route path="/signup" element={<Signup />} />
 
-        
-      </Routes>
     </div>
   );
 }
