@@ -99,7 +99,7 @@ export default function Home() {
     <section className="card">
       {/* Simple Head-to-Head title */}
       <h2 style={{ textAlign: "center", marginBottom: 12 }}>
-        Gripetime Jury – Head to Head
+        Gripetime Jury TEST
       </h2>
 
       {/* Pick which Live gripe to view */}
