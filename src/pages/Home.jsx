@@ -1,10 +1,9 @@
 // src/pages/Home.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import HeadtoHead from "../HeadtoHead.jsx";
 
-/** ===== Local DB helpers (same shape as Create/Respond/Admin) ===== */
 const LS_KEY = "gt_v3";
 const emptyDB = { gripes: [], selectedId: null };
+
 const load = () => {
   try {
     return JSON.parse(localStorage.getItem(LS_KEY)) || emptyDB;
@@ -12,15 +11,13 @@ const load = () => {
     return emptyDB;
   }
 };
+
 const save = (db) => localStorage.setItem(LS_KEY, JSON.stringify(db));
 
 const browserId =
   localStorage.gtBrowserId ||
-  (localStorage.gtBrowserId = Math.random()
-    .toString(36)
-    .slice(2));
+  (localStorage.gtBrowserId = Math.random().toString(36).slice(2));
 
-/** Small helper for star selection */
 function ImageBox({ data, alt, className, id }) {
   const style = data ? { background: `url(${data}) center/cover` } : undefined;
   return (
@@ -39,7 +36,6 @@ export default function Home() {
     [db]
   );
 
-  // keep selectedId pointing at a Live gripe, if any
   useEffect(() => {
     if (!liveGripes.length) return;
     const selectedIsLive = liveGripes.some((g) => g.id === db.selectedId);
@@ -101,21 +97,15 @@ export default function Home() {
 
   return (
     <section className="card">
-      {/* 🔹 Head-to-Head theme banner */}
-      <HeadtoHead
-      leftTitle="Griper"
-      rightTitle="Gripee"
-      leftCount={leftVotes}
-      rightCount={rightVotes}
-      onVoteLeft={() => selected && vote(selected.id, "L")}
-      onVoteRight={() => selected && vote(selected.id, "R")}
-    />
+      {/* Simple Head-to-Head title */}
+      <h2 style={{ textAlign: "center", marginBottom: 12 }}>
+        Gripetime Jury – Head to Head
+      </h2>
 
-
-      {/* Select which Live gripe to view */}
+      {/* Pick which Live gripe to view */}
       <select
         id="homeSelect"
-        style={{ width: "100%", padding: 12, margin: "16px 0" }}
+        style={{ width: "100%", padding: 12, marginBottom: 16 }}
         value={selected?.id || ""}
         onChange={(e) => onSelect(e.target.value)}
       >
@@ -126,7 +116,7 @@ export default function Home() {
         ))}
       </select>
 
-      {/* Original head-to-head ring layout (GRIPER vs GRIPEE) */}
+      {/* Head-to-head ring layout */}
       <div className="ring">
         {/* Left (GRIPER) */}
         <div className="card" id="homeLeft">
