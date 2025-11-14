@@ -32,7 +32,7 @@ export default function App() {
 
       {/* Top navigation bar */}
       <nav style={{ marginBottom: 20 }}>
-        <Link to="/">Home</Link> |{" "}
+        <Link to="/">Home TEST</Link> |{" "}
         <Link to="/create">Create a Gripe</Link> |{" "}
         <Link to="/respond">Respond</Link> |{" "}
         <Link to="/gripes">Gripes</Link> |{" "}
