@@ -17,6 +17,8 @@ import Rules from "./pages/Rules.jsx";
 import Legal from "./pages/Legal.jsx";
 import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup.jsx";
+import Leaderboards from "./pages/Leaderboards.jsx";
+import Admin from "./pages/Admin.jsx";
 
 // Base-aware logo path so it works locally and on GitHub Pages
 const logoPath = `${import.meta.env.BASE_URL}gripetime-logo.png`;
@@ -26,8 +28,7 @@ function AuthWidget() {
   if (!isAuthed) {
     return (
       <div>
-        <NavLink to="/login">Login</NavLink>
-        {" "}
+        <NavLink to="/login">Login</NavLink>{" "}
         <NavLink to="/signup">Signup</NavLink>
       </div>
     );
@@ -35,7 +36,9 @@ function AuthWidget() {
   return (
     <div>
       <span>Hi, {currentUser?.username}</span>{" "}
-      <button className="btn secondary" onClick={logout}>Logout</button>
+      <button className="btn secondary" onClick={logout}>
+        Logout
+      </button>
     </div>
   );
 }
@@ -43,15 +46,34 @@ function AuthWidget() {
 function Layout() {
   return (
     <>
-      <header className="wrap" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <header
+        className="wrap"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <img src={logoPath} alt="Gripetime" style={{ height: 48 }} />
           <nav>
-            <NavLink to="/" end>Home</NavLink>
+            <NavLink to="/" end>
+              Home
+            </NavLink>
+            {" "}
             <NavLink to="/create">Create a Gripe</NavLink>
+            {" "}
             <NavLink to="/respond">Respond</NavLink>
+            {" "}
             <NavLink to="/gripes">Gripes</NavLink>
+            {" "}
+            <NavLink to="/leaderboards">Leaderboards</NavLink>
+            {" "}
+            {/* 👇 Admin button now lives here */}
+            <NavLink to="/admin">Admin</NavLink>
+            {" "}
             <NavLink to="/rules">Rules</NavLink>
+            {" "}
             <NavLink to="/legal">Legal</NavLink>
           </nav>
         </div>
@@ -90,6 +112,16 @@ function App() {
               }
             />
             <Route path="gripes" element={<Gripes />} />
+            <Route path="leaderboards" element={<Leaderboards />} />
+            {/* 👇 Admin route (protected) */}
+            <Route
+              path="admin"
+              element={
+                <ProtectedRoute>
+                  <Admin />
+                </ProtectedRoute>
+              }
+            />
             <Route path="rules" element={<Rules />} />
             <Route path="legal" element={<Legal />} />
           </Route>
