@@ -36,17 +36,17 @@ export default function Sidebar() {
         <div className="brand-tag">Online Dispute Resolution</div>
       </div>
 
-      <nav className="nav">
-        <NavLink className={linkClass} to="/">Home</NavLink>
-        <NavLink className={linkClass} to="/gripes">Gripes</NavLink>
-        <NavLink className={linkClass} to="/create">Create</NavLink>
-        <NavLink className={linkClass} to="/respond">Respond</NavLink>
-        <NavLink className={linkClass} to="/leaderboards">Leaderboards</NavLink>
-        <NavLink className={linkClass} to="/admin">Admin</NavLink>
-        <NavLink className={linkClass} to="/auth">Sign In</NavLink>
-        {/* 🔹 New Sign Up link */}
-        <NavLink className={linkClass} to="/signup">Sign Up</NavLink>
-      </nav>
+     <nav className="nav">
+  <NavLink className={linkClass} to="/">Home</NavLink>
+  <NavLink className={linkClass} to="/gripes">Gripes</NavLink>
+  <NavLink className={linkClass} to="/create">Create</NavLink>
+  <NavLink className={linkClass} to="/respond">Respond</NavLink>
+  <NavLink className={linkClass} to="/leaderboards">Leaderboards</NavLink>
+  {/* 👇 This is the Admin button */}
+  <NavLink className={linkClass} to="/admin">Admin</NavLink>
+  <NavLink className={linkClass} to="/auth">Sign In</NavLink>
+  <NavLink className={linkClass} to="/signup">Sign Up</NavLink>
+</nav>
 
       <div style={{ marginTop: "auto", padding: "12px" }}>
         {user ? (
