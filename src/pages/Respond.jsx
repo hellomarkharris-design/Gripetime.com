@@ -36,7 +36,7 @@ function goToSignIn() {
 export default function Respond() {
   const user = getCurrentUser();
 
-  // If not signed in, show message instead of the form
+  // Require sign in for responding
   if (!user) {
     return (
       <section className="card">
@@ -49,9 +49,24 @@ export default function Respond() {
     );
   }
 
-  const inputRef = useRef(null);
   const [db, setDb] = useState(load());
-  const [pickId, setPickId] = useState(db.selectedId || "");
+  const inputRef = useRef(null);
+
+  // Try to honor a share link like ?g=<id>&t=<token>
+  const [pickId, setPickId] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const gid = params.get("g");
+    const token = params.get("t");
+    const localDB = load();
+    if (gid && token) {
+      const match = localDB.gripes.find(
+        (g) => g.id === gid && g.shareToken && g.shareToken === token
+      );
+      if (match) return gid;
+    }
+    return localDB.selectedId || "";
+  });
+
   const [files, setFiles] = useState([]);
   const [text, setText] = useState("");
 
@@ -68,17 +83,29 @@ export default function Respond() {
   };
 
   const onChoose = (e) => setFiles(Array.from(e.target.files || []));
+  const onChangeSelect = (e) => setPickId(e.target.value);
 
   const onSave = async () => {
     if (!selected) return alert("Pick a gripe first!");
+
     const imgs = await Promise.all(files.slice(0, 3).map(dt));
     const next = { ...db, gripes: db.gripes.map((g) => ({ ...g })) };
     const g = next.gripes.find((x) => x.id === selected.id);
-    g.gripee.images = imgs;
-    g.gripee.text = clip(text);
+    if (!g) return;
+
+    // Save as draft, subject to Admin review
+    g.gripeeDraft = {
+      images: imgs,
+      text: clip(text),
+    };
+
+    if (g.status === "AwaitingResponse") {
+      g.status = "PendingResponse";
+    }
+
     setDb(next);
     save(next);
-    location.hash = "#/"; // keep existing navigation behavior
+    location.hash = "#/"; // back to home
   };
 
   return (
@@ -88,7 +115,7 @@ export default function Respond() {
       <select
         style={{ width: "100%", padding: 10 }}
         value={pickId || ""}
-        onChange={(e) => setPickId(e.target.value)}
+        onChange={onChangeSelect}
       >
         {db.gripes.length === 0 ? (
           <option>No gripes</option>
@@ -135,7 +162,7 @@ export default function Respond() {
       </div>
 
       <button className="btn" onClick={onSave}>
-        Save Response
+        Submit Response for Review
       </button>
     </section>
   );
