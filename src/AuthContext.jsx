@@ -1,77 +1,73 @@
 // src/AuthContext.jsx
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-const USERS_KEY = "gt_users";
-const CURRENT_KEY = "gt_currentUser";
-
-function loadUsers() {
-  try { return JSON.parse(localStorage.getItem(USERS_KEY)) || []; }
-  catch { return []; }
-}
-function saveUsers(users) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-}
-function loadCurrent() {
-  try { return JSON.parse(localStorage.getItem(CURRENT_KEY)) || null; }
-  catch { return null; }
-}
-function saveCurrent(user) {
-  if (user) localStorage.setItem(CURRENT_KEY, JSON.stringify(user));
-  else localStorage.removeItem(CURRENT_KEY);
-}
-
-const AuthCtx = createContext(null);
+const AuthContext = createContext(null);
+const LS_USER_KEY = "gt_user_v1";
 
 export function AuthProvider({ children }) {
-  const [users, setUsers] = useState(loadUsers());
-  const [currentUser, setCurrentUser] = useState(loadCurrent());
+  const [currentUser, setCurrentUser] = useState(null);
+  const [ready, setReady] = useState(false);
 
-  useEffect(() => saveUsers(users), [users]);
-  useEffect(() => saveCurrent(currentUser), [currentUser]);
+  // Load user from localStorage on startup
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(LS_USER_KEY);
+      if (raw) {
+        setCurrentUser(JSON.parse(raw));
+      }
+    } catch (e) {
+      console.error("Failed to load user", e);
+    } finally {
+      setReady(true);
+    }
+  }, []);
 
-  const signup = ({ username, email, password, juryOptIn }) => {
-    const exists = users.some(
-      (u) => u.username.toLowerCase() === username.toLowerCase() || u.email.toLowerCase() === email.toLowerCase()
-    );
-    if (exists) throw new Error("That username or email is already registered.");
-    const newUser = {
-      id: "u_" + Math.random().toString(36).slice(2),
-      username,
+  const isAuthed = !!currentUser;
+
+  const login = async (email, password) => {
+    const raw = localStorage.getItem(LS_USER_KEY);
+    if (!raw) {
+      throw new Error("Invalid credentials");
+    }
+    const saved = JSON.parse(raw);
+    if (saved.email === email && saved.password === password) {
+      setCurrentUser(saved);
+      return;
+    }
+    throw new Error("Invalid credentials");
+  };
+
+  const signup = async ({ email, password, username }) => {
+    const user = {
       email,
-      password, // Demo only; replace with a hash or Firebase in production
-      juryOptIn: !!juryOptIn,
-      createdAt: Date.now(),
+      password,
+      username,
     };
-    const next = [newUser, ...users];
-    setUsers(next);
-    setCurrentUser({ id: newUser.id, username: newUser.username, email: newUser.email, juryOptIn: newUser.juryOptIn });
-    return newUser;
+    localStorage.setItem(LS_USER_KEY, JSON.stringify(user));
+    setCurrentUser(user);
   };
 
-  const login = ({ usernameOrEmail, password }) => {
-    const found = users.find(
-      (u) =>
-        u.password === password &&
-        (u.username.toLowerCase() === usernameOrEmail.toLowerCase() ||
-         u.email.toLowerCase() === usernameOrEmail.toLowerCase())
-    );
-    if (!found) throw new Error("Invalid credentials.");
-    setCurrentUser({ id: found.id, username: found.username, email: found.email, juryOptIn: found.juryOptIn });
-    return found;
+  const logout = () => {
+    setCurrentUser(null);
+    // keep the saved credentials so you can log in again later
   };
 
-  const logout = () => setCurrentUser(null);
+  const value = {
+    isAuthed,
+    currentUser,
+    login,
+    signup,
+    logout,
+    ready,
+  };
 
-  const value = useMemo(() => ({
-    currentUser, users, signup, login, logout,
-    isAuthed: !!currentUser,
-  }), [currentUser, users]);
-
-  return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>;
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthCtx);
-  if (!ctx) throw new Error("useAuth must be used within <AuthProvider>");
+  const ctx = useContext(AuthContext);
+  if (!ctx) {
+    throw new Error("useAuth must be used inside AuthProvider");
+  }
   return ctx;
 }
