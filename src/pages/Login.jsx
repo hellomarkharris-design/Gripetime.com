@@ -1,61 +1,68 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../AuthContext.jsx";
 
 export default function Login() {
   const { login } = useAuth();
-  const nav = useNavigate();
-  const loc = useLocation();
-  const [creds, setCreds] = useState({ usernameOrEmail: "", password: "" });
-  const [err, setErr] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const onChange = (e) => {
-    const { name, value } = e.target;
-    setCreds((c) => ({ ...c, [name]: value }));
-  };
+  const from = location.state?.from?.pathname || "/";
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    setErr("");
+    setError("");
     try {
-      if (!creds.usernameOrEmail.trim() || !creds.password.trim()) {
-        throw new Error("Both fields are required.");
-      }
-      login(creds);
-      const dest = loc.state?.from || "/";
-      nav(dest, { replace: true });
-    } catch (e2) {
-      setErr(e2.message || "Unable to log in.");
+      await login(email.trim(), password);
+      navigate(from, { replace: true });
+    } catch (err) {
+      setError("Invalid Credentials");
     }
   };
 
   return (
-    <section className="card" style={{ maxWidth: 520, margin: "0 auto" }}>
-      <h2>Welcome back</h2>
-      {err && <p style={{ color: "#ff6b6b" }}>{err}</p>}
-      <form onSubmit={onSubmit}>
-        <label>Username or Email</label>
-        <input
-          name="usernameOrEmail"
-          value={creds.usernameOrEmail}
-          onChange={onChange}
-          placeholder="your username or email"
-        />
+    <main style={{ padding: 24, maxWidth: 400, margin: "0 auto" }}>
+      <h1>Login</h1>
+      <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <label>
+          Email
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ width: "100%", padding: 8 }}
+          />
+        </label>
 
-        <label style={{ marginTop: 10 }}>Password</label>
-        <input
-          type="password"
-          name="password"
-          value={creds.password}
-          onChange={onChange}
-          placeholder="••••••••"
-        />
+        <label>
+          Password
+          <input
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ width: "100%", padding: 8 }}
+          />
+        </label>
 
-        <div style={{ marginTop: 16 }}>
-          <button className="btn" type="submit">Log in</button>
-        </div>
+        {error && (
+          <div style={{ color: "red", fontSize: "0.9em" }}>
+            {error}
+          </div>
+        )}
+
+        <button className="btn" type="submit">
+          Log In
+        </button>
       </form>
-    </section>
+      <p style={{ marginTop: 12, fontSize: "0.9em" }}>
+        Tip: Sign up first, then use the same email and password here.
+      </p>
+    </main>
   );
 }
