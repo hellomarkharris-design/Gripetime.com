@@ -102,14 +102,15 @@ export default function Home() {
   return (
     <section className="card">
       {/* 🔹 Head-to-Head theme banner */}
-      <HeadToHead
-        leftTitle="Griper"
-        rightTitle="Gripee"
-        leftCount={leftVotes}
-        rightCount={rightVotes}
-        onVoteLeft={() => selected && vote(selected.id, "L")}
-        onVoteRight={() => selected && vote(selected.id, "R")}
-      />
+      <HeadtoHead
+      leftTitle="Griper"
+      rightTitle="Gripee"
+      leftCount={leftVotes}
+      rightCount={rightVotes}
+      onVoteLeft={() => selected && vote(selected.id, "L")}
+      onVoteRight={() => selected && vote(selected.id, "R")}
+    />
+
 
       {/* Select which Live gripe to view */}
       <select
