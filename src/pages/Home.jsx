@@ -1,6 +1,8 @@
 // src/pages/Home.jsx
 import React, { useEffect, useMemo, useState } from "react";
+import HeadToHead from "../components/HeadToHead.jsx";
 
+/** ===== Local DB helpers (same shape as Create/Respond/Admin) ===== */
 const LS_KEY = "gt_v3";
 const emptyDB = { gripes: [], selectedId: null };
 const load = () => {
@@ -11,10 +13,14 @@ const load = () => {
   }
 };
 const save = (db) => localStorage.setItem(LS_KEY, JSON.stringify(db));
+
 const browserId =
   localStorage.gtBrowserId ||
-  (localStorage.gtBrowserId = Math.random().toString(36).slice(2));
+  (localStorage.gtBrowserId = Math.random()
+    .toString(36)
+    .slice(2));
 
+/** Small helper for star selection */
 function ImageBox({ data, alt, className, id }) {
   const style = data ? { background: `url(${data}) center/cover` } : undefined;
   return (
@@ -27,13 +33,13 @@ function ImageBox({ data, alt, className, id }) {
 export default function Home() {
   const [db, setDb] = useState(load());
 
-  // Only "Live" gripes are visible to the Jury
+  // ✅ Only show gripes that Admin has posted for the Jury
   const liveGripes = useMemo(
     () => db.gripes.filter((g) => g.status === "Live"),
     [db]
   );
 
-  // Ensure selectedId points to a live gripe if one exists
+  // keep selectedId pointing at a Live gripe, if any
   useEffect(() => {
     if (!liveGripes.length) return;
     const selectedIsLive = liveGripes.some((g) => g.id === db.selectedId);
@@ -76,6 +82,7 @@ export default function Home() {
 
     g.voted[browserId] = true;
     g.votes[side] = (g.votes[side] || 0) + 1;
+
     setDb(next);
     save(next);
   };
@@ -89,11 +96,25 @@ export default function Home() {
     );
   }
 
+  const leftVotes = selected?.votes?.L ?? 0;
+  const rightVotes = selected?.votes?.R ?? 0;
+
   return (
     <section className="card">
+      {/* 🔹 Head-to-Head theme banner */}
+      <HeadToHead
+        leftTitle="Griper"
+        rightTitle="Gripee"
+        leftCount={leftVotes}
+        rightCount={rightVotes}
+        onVoteLeft={() => selected && vote(selected.id, "L")}
+        onVoteRight={() => selected && vote(selected.id, "R")}
+      />
+
+      {/* Select which Live gripe to view */}
       <select
         id="homeSelect"
-        style={{ width: "100%", padding: 12, marginBottom: 12 }}
+        style={{ width: "100%", padding: 12, margin: "16px 0" }}
         value={selected?.id || ""}
         onChange={(e) => onSelect(e.target.value)}
       >
@@ -104,6 +125,7 @@ export default function Home() {
         ))}
       </select>
 
+      {/* Original head-to-head ring layout (GRIPER vs GRIPEE) */}
       <div className="ring">
         {/* Left (GRIPER) */}
         <div className="card" id="homeLeft">
@@ -115,13 +137,13 @@ export default function Home() {
             id="homeLeftCircle"
             className="photoCircle"
             alt="PHOTO"
-            data={selected?.griper.images[0]}
+            data={selected?.griper?.images?.[0]}
           />
           <ImageBox
             id="homeLeftMain"
             className="mainPhoto"
             alt="Main Image"
-            data={selected?.griper.images[0]}
+            data={selected?.griper?.images?.[0]}
           />
 
           <div className="thumbs">
@@ -129,13 +151,13 @@ export default function Home() {
               id="homeLeftT2"
               className="thumb"
               alt="Photo 2"
-              data={selected?.griper.images[1]}
+              data={selected?.griper?.images?.[1]}
             />
             <ImageBox
               id="homeLeftT3"
               className="thumb"
               alt="Photo 3"
-              data={selected?.griper.images[2]}
+              data={selected?.griper?.images?.[2]}
             />
           </div>
           <br />
@@ -144,7 +166,7 @@ export default function Home() {
             id="homeLeftText"
             readOnly
             style={{ minHeight: 120 }}
-            value={selected?.griper.text || ""}
+            value={selected?.griper?.text || ""}
           />
 
           <div className="voteRow">
@@ -185,13 +207,13 @@ export default function Home() {
             id="homeRightCircle"
             className="photoCircle"
             alt="PHOTO"
-            data={selected?.gripee.images[0]}
+            data={selected?.gripee?.images?.[0]}
           />
           <ImageBox
             id="homeRightMain"
             className="mainPhoto"
             alt="Main Image"
-            data={selected?.gripee.images[0]}
+            data={selected?.gripee?.images?.[0]}
           />
 
           <div className="thumbs">
@@ -199,13 +221,13 @@ export default function Home() {
               id="homeRightT2"
               className="thumb"
               alt="Photo 2"
-              data={selected?.gripee.images[1]}
+              data={selected?.gripee?.images?.[1]}
             />
             <ImageBox
               id="homeRightT3"
               className="thumb"
               alt="Photo 3"
-              data={selected?.gripee.images[2]}
+              data={selected?.gripee?.images?.[2]}
             />
           </div>
           <br />
@@ -214,7 +236,7 @@ export default function Home() {
             id="homeRightText"
             readOnly
             style={{ minHeight: 120 }}
-            value={selected?.gripee.text || ""}
+            value={selected?.gripee?.text || ""}
           />
 
           <div className="voteRow">
@@ -244,8 +266,8 @@ export default function Home() {
       </div>
 
       <div style={{ textAlign: "center", marginTop: 12 }}>
-        Griper: <span id="countL">{selected?.votes.L ?? 0}</span> | Gripee:{" "}
-        <span id="countR">{selected?.votes.R ?? 0}</span>
+        Griper: <span id="countL">{leftVotes}</span> | Gripee:{" "}
+        <span id="countR">{rightVotes}</span>
       </div>
     </section>
   );
