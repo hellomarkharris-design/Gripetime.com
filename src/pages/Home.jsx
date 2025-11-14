@@ -30,24 +30,42 @@ function ImageBox({ data, alt, className, id }) {
 export default function Home() {
   const [db, setDb] = useState(load());
 
-  // ✅ Only show gripes that Admin has posted for the Jury
+  // Gripes that Admin has fully posted for the Jury
   const liveGripes = useMemo(
     () => db.gripes.filter((g) => g.status === "Live"),
     [db]
   );
 
+  // Decide what list to show in the dropdown / layout:
+  // - Prefer Live gripes
+  // - But if none are Live yet, show all gripes so the head-to-head UI still appears
+  const displayGripes = liveGripes.length ? liveGripes : db.gripes;
+
+  // If there are no gripes at all, show simple message
+  if (!displayGripes.length) {
+    return (
+      <section className="card">
+        <h2>Gripetime Jury – Head to Head</h2>
+        <p>No gripes have been created yet.</p>
+      </section>
+    );
+  }
+
+  // Make sure selectedId points to something in displayGripes
   useEffect(() => {
-    if (!liveGripes.length) return;
-    const selectedIsLive = liveGripes.some((g) => g.id === db.selectedId);
-    if (!selectedIsLive) {
-      const next = { ...db, selectedId: liveGripes[0].id };
+    if (!displayGripes.length) return;
+    const selectedIsValid = displayGripes.some(
+      (g) => g.id === db.selectedId
+    );
+    if (!selectedIsValid) {
+      const next = { ...db, selectedId: displayGripes[0].id };
       setDb(next);
       save(next);
     }
-  }, [db, liveGripes]);
+  }, [db, displayGripes]);
 
   const selected =
-    liveGripes.find((g) => g.id === db.selectedId) || liveGripes[0] || null;
+    displayGripes.find((g) => g.id === db.selectedId) || displayGripes[0];
 
   const onSelect = (id) => {
     const next = { ...db, selectedId: id };
@@ -83,35 +101,25 @@ export default function Home() {
     save(next);
   };
 
-  if (!liveGripes.length) {
-    return (
-      <section className="card">
-        <h2>Gripetime Jury</h2>
-        <p>No disputes have been posted for the Jury yet.</p>
-      </section>
-    );
-  }
-
   const leftVotes = selected?.votes?.L ?? 0;
   const rightVotes = selected?.votes?.R ?? 0;
 
   return (
     <section className="card">
-      {/* Simple Head-to-Head title */}
       <h2 style={{ textAlign: "center", marginBottom: 12 }}>
-        Gripetime Jury TEST
+        Gripetime Jury – Head to Head
       </h2>
 
-      {/* Pick which Live gripe to view */}
+      {/* Dropdown to pick which gripe to view */}
       <select
         id="homeSelect"
         style={{ width: "100%", padding: 12, marginBottom: 16 }}
         value={selected?.id || ""}
         onChange={(e) => onSelect(e.target.value)}
       >
-        {liveGripes.map((g) => (
+        {displayGripes.map((g) => (
           <option key={g.id} value={g.id}>
-            {g.id}
+            {g.id} {g.status !== "Live" ? `(${g.status})` : ""}
           </option>
         ))}
       </select>
