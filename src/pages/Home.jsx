@@ -1,7 +1,6 @@
 // src/pages/Home.jsx
 import React, { useEffect, useMemo, useState } from "react";
 
-/** ===== Local DB helpers ===== */
 const LS_KEY = "gt_v3";
 const emptyDB = { gripes: [], selectedId: null };
 const load = () => {
@@ -16,11 +15,6 @@ const browserId =
   localStorage.gtBrowserId ||
   (localStorage.gtBrowserId = Math.random().toString(36).slice(2));
 
-/** Small helpers */
-const wc = (s = "") => (s.trim() ? s.trim().split(/\s+/).length : 0);
-const clip = (s = "") =>
-  wc(s) > 1000 ? s.split(/\s+/).slice(0, 1000).join(" ") : s;
-
 function ImageBox({ data, alt, className, id }) {
   const style = data ? { background: `url(${data}) center/cover` } : undefined;
   return (
@@ -33,16 +27,15 @@ function ImageBox({ data, alt, className, id }) {
 export default function Home() {
   const [db, setDb] = useState(load());
 
-  // Only show "Live" gripes to the Jury
+  // Only "Live" gripes are visible to the Jury
   const liveGripes = useMemo(
     () => db.gripes.filter((g) => g.status === "Live"),
     [db]
   );
 
-  // Ensure selectedId points to a live gripe if there is one
+  // Ensure selectedId points to a live gripe if one exists
   useEffect(() => {
     if (!liveGripes.length) return;
-
     const selectedIsLive = liveGripes.some((g) => g.id === db.selectedId);
     if (!selectedIsLive) {
       const next = { ...db, selectedId: liveGripes[0].id };
@@ -51,10 +44,8 @@ export default function Home() {
     }
   }, [db, liveGripes]);
 
-  const selected = useMemo(
-    () => liveGripes.find((g) => g.id === db.selectedId) || liveGripes[0] || null,
-    [liveGripes, db.selectedId]
-  );
+  const selected =
+    liveGripes.find((g) => g.id === db.selectedId) || liveGripes[0] || null;
 
   const onSelect = (id) => {
     const next = { ...db, selectedId: id };
@@ -100,7 +91,6 @@ export default function Home() {
 
   return (
     <section className="card">
-      {/* Select gripe */}
       <select
         id="homeSelect"
         style={{ width: "100%", padding: 12, marginBottom: 12 }}
