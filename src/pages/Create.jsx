@@ -1,5 +1,6 @@
 // src/pages/Create.jsx
 import React, { useRef, useState } from "react";
+import { useAuth } from "../AuthContext.jsx";
 
 const LS_KEY = "gt_v3";
 const load = () =>
@@ -9,6 +10,7 @@ const save = (db) => localStorage.setItem(LS_KEY, JSON.stringify(db));
 const wc = (s = "") => (s.trim() ? s.trim().split(/\s+/).length : 0);
 const clip = (s = "") =>
   wc(s) > 1000 ? s.split(/\s+/).slice(0, 1000).join(" ") : s;
+
 const dt = (file) =>
   new Promise((r) => {
     const fr = new FileReader();
@@ -16,33 +18,23 @@ const dt = (file) =>
     fr.readAsDataURL(file);
   });
 
-// 🔐 Auth helpers
-const CURRENT_USER_KEY = "gt_user_v1";
-
-function getCurrentUser() {
-  try {
-    const raw = localStorage.getItem(CURRENT_USER_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-function goToSignIn() {
-  const base = import.meta.env.BASE_URL || "/";
-  window.location.href = `${base}auth`;
-}
-
 export default function Create() {
-  const user = getCurrentUser();
+  // Use shared auth context
+  const { isAuthed, currentUser } = useAuth();
 
   // If not signed in, show message instead of the form
-  if (!user) {
+  if (!isAuthed) {
     return (
       <section className="card">
         <h2>Sign in required</h2>
         <p>You need to sign in before you can create a gripe.</p>
-        <button className="btn" onClick={goToSignIn}>
+        <button
+          className="btn"
+          onClick={() => {
+            // HashRouter route to /login
+            window.location.hash = "#/login";
+          }}
+        >
           Go to Sign In
         </button>
       </section>
@@ -76,6 +68,8 @@ export default function Create() {
       // 🔹 New review workflow fields
       status: "PendingGripe", // waiting for Admin review
       created: Date.now(),
+      createdBy:
+        currentUser?.username || currentUser?.email || "Unknown user",
       votes: { L: 0, R: 0 },
       voted: {},
       griper: { images: imgs, text: clip(text) },
@@ -91,7 +85,8 @@ export default function Create() {
     save(db);
     setFiles([]);
     setText("");
-    location.hash = "#/"; // back to home
+    // back to home (HashRouter)
+    window.location.hash = "#/";
   };
 
   return (
