@@ -34,7 +34,7 @@ export default function App() {
   <Route path="/create" element={<Create />} />
   <Route path="/respond" element={<Respond />} />
   <Route path="/leaderboards" element={<Leaderboards />} />
-  <Route path="/admin" element={<Admin />} />   {/* 👈 This line */}
+  <Route path="/admin" element={<Admin />} />   
   <Route path="/auth" element={<Auth />} />
   <Route path="/signup" element={<Signup />} />
   <Route path="/rules" element={<Rules />} />
